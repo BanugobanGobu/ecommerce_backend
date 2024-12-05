@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import User, { IUser } from "../models/UserModel"
+import User from "../models/UserModel"
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
@@ -43,7 +43,7 @@ class UserController {
            }
         const token = jwt.sign(
             { id: user._id },
-            process.env.JWT_SECRET || 'Ask Mr Banugoban to Login',
+            process.env.JWT_SECRET ?? 'Ask Mr Banugoban to Login',
             { expiresIn: '1h' }
         );
         res.status(200).json({ message: 'Login successful', token });
