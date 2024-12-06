@@ -7,6 +7,8 @@ import productRoutes from "./src/routes/ProductRoutes"
 import path from "path";
 import bodyParser from "body-parser";
 import authMiddleware from "./src/middlewares/authMiddleware";
+import mail from "./src/routes/MailRoutes";
+// import "./src/controllers/MailProductWithCron"
 
 const app = express();
 const port: string | number = process.env.PORT ?? 3000;
@@ -31,6 +33,7 @@ app.use(cors())
 app.use("/user", userRoutes);
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 app.use("/product", authMiddleware.authenticate, productRoutes)
+app.use("/mail", authMiddleware.authenticate, mail);
 
 mongoose.connect(mongoUrl)
     .then(() => {
@@ -41,6 +44,7 @@ mongoose.connect(mongoUrl)
     .catch((error: Error) => {
         console.log("Error connecting to MongoDB:", error);
     });
+
 
 
 

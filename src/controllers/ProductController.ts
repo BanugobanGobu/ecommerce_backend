@@ -108,19 +108,33 @@ class ProductController {
             if (stock) {
                 filter.stock = { $gte: Number(stock) }
             }
-            if (createdAt){
+            if (createdAt) {
                 const startDate = new Date(createdAt as string);
                 const endDate = new Date(startDate);
                 endDate.setDate(endDate.getDate() + 1);
-                filter.createdAt={$gte:startDate,$lte:endDate}
+                filter.createdAt = { $gte: startDate, $lte: endDate }
             }
-                const products = await Product.find(filter)
+            const products = await Product.find(filter)
             res.status(200).json(products)
         }
         catch (error) {
             res.status(500).json({ message: "Error while filtering the product", error })
         }
     }
+
+
+
+
+    public async getAllProductsForMail(req: Request, res: Response): Promise<any> {
+        try {
+            const products = await Product.find({});
+            return products;  // Return products instead of sending response directly
+        } catch (error) {
+            console.error('Error fetching products:', error);
+            throw new Error('Error fetching products');
+        }
+    }
+
 
 
 
