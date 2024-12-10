@@ -18,7 +18,6 @@ const mongoUrl: string = process.env.MONGO_URL as string;
 app.get("/", (req: Request, res: Response): void => {
     res.send("This server was created for Banugoban backend project");
 });
-
 if (!mongoUrl) {
     console.error("MongoDB connection URL is missing in environment variables.");
     process.exit(1)
