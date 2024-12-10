@@ -32,10 +32,10 @@ class UserController {
 
     try{
             const user= await User.findOne({email})
-            if(!user){
-                res.status(404).json({message:"Create your account  to Login"})
-                return;
+            if (!user) {
+                res.status(404).json({ message: "Create your account to Login" });           return;
             }
+            
            const isMatch=await bcrypt.compare(password,user.password);
            if(!isMatch){
             res.status(400).json({message:"Invalid email or password"});
