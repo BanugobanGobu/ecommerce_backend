@@ -8,7 +8,7 @@ class ProductController {
             const { name, description, price, stock } = req.body;
 
             const files = req.files as Express.Multer.File[];
-            const imagePaths = files.map((file) => file.path);
+            const imagePaths = files.map((file) => `/uploads/${file.filename}`); 
 
             const newProduct = new Product({
                 name,
@@ -57,33 +57,39 @@ class ProductController {
         try {
             const { id } = req.params;
             const { name, description, price, stock } = req.body;
+    
             const newImagePaths = (req.files as Express.Multer.File[])?.map(
-                (file) => file.path
+                (file) => `/uploads/${file.filename}`
             );
-
-            const updatedProduct = await Product.findByIdAndUpdate(
-                id,
-                {
-                    name,
-                    description,
-                    price,
-                    stock,
-                    images: newImagePaths?.length ? newImagePaths : undefined,
-                },
-                { new: true, runValidators: true }
-            );
-
-            if (!updatedProduct) {
+    
+            const existingProduct = await Product.findById(id);
+            if (!existingProduct) {
                 res.status(404).json({ message: "Product not found" });
                 return;
             }
+            const updatedFields: any = {
+                name,
+                description,
+                price,
+                stock,
+            };
+    
+            if (newImagePaths && newImagePaths.length > 0) {
+                updatedFields.images = newImagePaths;
+            }
+    
+            const updatedProduct = await Product.findByIdAndUpdate(
+                id,
+                updatedFields,
+                { new: true, runValidators: true }
+            );
+    
             res.status(200).json(updatedProduct);
         } catch (error) {
-            res.status(500).json({ message: "Error updating product" });
+            res.status(500).json({ message: "Error updating product", error });
         }
     }
-
-
+    
     public async deleteProduct(req: Request, res: Response): Promise<void> {
         try {
             const { id } = req.params;
@@ -128,7 +134,7 @@ class ProductController {
     public async getAllProductsForMail(req: Request, res: Response): Promise<any> {
         try {
             const products = await Product.find({});
-            return products;  // Return products instead of sending response directly
+            return products;
         } catch (error) {
             console.error('Error fetching products:', error);
             throw new Error('Error fetching products');
